@@ -3,60 +3,134 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProkatLibrary;
 
-namespace ConsoleApplication3
+namespace BankApplication
 {
     class Program
     {
         static void Main(string[] args)
         {
-            /* Random rnd = new Random();
-             Ticket exe = new Ticket(rnd.Next(1, 2000), rnd.Next(1, 2000), "Использован");
-             Ticket exe1 = new Ticket(rnd.Next(1, 2000), rnd.Next(1, 2000), "Использован");
-             //exe.reWriteTicket();
+            Prokat<Account> prokat = new Prokat<Account>("Прокат СнежКом");
+            bool alive = true;
+            while (alive)
+            {
+                ConsoleColor color = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen; // выводим список команд зеленым цветом
+                Console.WriteLine("1. Открыть ден \t 2. оформить возврат  \t 3. Добавить оплату");
+                Console.WriteLine("4. Закрыть день \t 5. Пропустить день \t 6. Выйти из программы");
+                Console.WriteLine("Введите номер пункта:");
+                Console.ForegroundColor = color;
+                try
+                {
+                    int command = Convert.ToInt32(Console.ReadLine());
 
-             
-             klient ex = new klient("Alexandr", "Муж", exe, 26);
+                    switch (command)
+                    {
+                        case 1:
+                            OpenAccount(prokat);
+                            break;
+                        case 2:
+                            Withdraw(prokat);
+                            break;
+                        case 3:
+                            Put(prokat);
+                            break;
+                        case 4:
+                            CloseAccount(prokat);
+                            break;
+                        case 5:
+                            break;
+                        case 6:
+                            alive = false;
+                            continue;
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    // выводим сообщение об ошибке красным цветом
+                    color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(ex.Message);
+                    Console.ForegroundColor = color;
+                }
+            }
+        }
 
-             ex.reWrite();
+        private static void OpenAccount(Prokat<Account> prokat)
+        {
+            Console.WriteLine("Укажите сумму для создания счета:");
 
+            decimal sum = Convert.ToDecimal(Console.ReadLine());
+            Console.WriteLine("Выберите тип счета: 1. До востребования 2. Депозит");
+            AccountType accountType;
 
-             klient ex1 = new klient("Анна", "Муж", exe1, 18);
-             ex1.reWrite();
+            int type = Convert.ToInt32(Console.ReadLine());
 
-             WorkInventory win1 = new WorkInventory("2004-05-23", 5, "Рабочий инвентарь", "Дебилов Д.Д.", "Только для клиентов");
-             SnowboardInventory sin1 = new SnowboardInventory("2004-05-23", 50, "Прокатный инвентарь", 155, "Camber");
+            if (type == 2)
+                accountType = AccountType.Deposit;
+            else
+                accountType = AccountType.Ordinary;
 
-             List<Inventory> ListInventory = new List<Inventory>();
+            prokat.Open(accountType,
+                sum,
+                AddSumHandler,  // обработчик добавления средств на счет
+                WithdrawSumHandler, // обработчик вывода средств
+                (o, e) => Console.WriteLine(e.Message), // обработчик начислений процентов в виде лямбда-выражения
+                CloseAccountHandler, // обработчик закрытия счета
+                OpenAccountHandler); // обработчик открытия счета
+        }
 
-             ListInventory.Add(win1);
-             ListInventory.Add(sin1);
+        private static void Withdraw(Prokat<Account> prokat)
+        {
+            Console.WriteLine("Укажите сумму для вывода со счета:");
 
+            decimal sum = Convert.ToDecimal(Console.ReadLine());
+            Console.WriteLine("Введите id счета:");
+            int id = Convert.ToInt32(Console.ReadLine());
 
-             foreach (Inventory i in ListInventory)
-             {
-                 if (i is WorkInventory)
-                 {
-                     (i as WorkInventory).reWriteWorkInventory();
-                 }
-                 else if (i is SnowboardInventory)
-                 {
-                     (i as SnowboardInventory).reWriteSnowboardInventory();
-                 }
-                 else i.reWriteInventory();
+            prokat.Withdraw(sum, id);
+        }
 
-             }
-             */
-            WorkInventory workint1 = new WorkInventory("66/66/6666", 66, "Рабочий инвентарь", "Дебилов Д.Д.", "Для клиентов");
-            Console.WriteLine(workint1.InventoryInfo());
+        private static void Put(Prokat<Account> prokat)
+        {
+            Console.WriteLine("Укажите сумму, чтобы положить на счет:");
+            decimal sum = Convert.ToDecimal(Console.ReadLine());
+            Console.WriteLine("Введите Id счета:");
+            int id = Convert.ToInt32(Console.ReadLine());
+            prokat.Put(sum, id);
+        }
 
+        private static void CloseAccount(Prokat<Account> prokat)
+        {
+            Console.WriteLine("Введите id счета, который надо закрыть:");
+            int id = Convert.ToInt32(Console.ReadLine());
 
-            
-
-            WorkInventoryForClients workintklients1 = new WorkInventoryForClients("14/88/6969", 99, "Рабочий инвентарь", "Хрюшкин Х.Й.", "Только для клиентов", "6+", "Не брать в рот");
-            Console.WriteLine(workintklients1.InventoryInfo());
-
-            Console.ReadLine();
+            bank.Close(id);
+        }
+        // обработчики событий класса Account
+        // обработчик открытия счета
+        private static void OpenAccountHandler(object sender, AccountEventArgs e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        // обработчик добавления денег на счет
+        private static void AddSumHandler(object sender, AccountEventArgs e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        // обработчик вывода средств
+        private static void WithdrawSumHandler(object sender, AccountEventArgs e)
+        {
+            Console.WriteLine(e.Message);
+            if (e.Sum > 0)
+                Console.WriteLine("Идем тратить деньги");
+        }
+        // обработчик закрытия счета
+        private static void CloseAccountHandler(object sender, AccountEventArgs e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 }

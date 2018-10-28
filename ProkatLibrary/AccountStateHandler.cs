@@ -10,9 +10,9 @@ namespace ProkatLibrary
 
     public class AccountEventArgs
     {
-        //Сообщение
+        // Сообщение
         public string Message { get; private set; }
-        //Сумма проката
+        // Сумма, на которую изменился счет
         public decimal Sum { get; private set; }
 
         public AccountEventArgs(string _mes, decimal _sum)

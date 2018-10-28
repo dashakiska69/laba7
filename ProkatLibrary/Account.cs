@@ -8,16 +8,15 @@ namespace ProkatLibrary
 {
     public abstract class Account : IAccount
     {
-        //Событие, возникающее при выводе денег
+        //Событие, возникающее при возврате денег
         protected internal event AccountStateHandler Withdrawed;
-        // Событие возникающее при добавление на счет
+        // Событие возникающее при добавление денег на счет
         protected internal event AccountStateHandler Added;
-        // Событие возникающее при открытии счета
+        // Событие возникающее при открытии нового дня
         protected internal event AccountStateHandler Opened;
-        // Событие возникающее при закрытии счета
+        // Событие возникающее при закрытии дня
         protected internal event AccountStateHandler Closed;
-        // Событие возникающее при начислении процентов
-        protected internal event AccountStateHandler Calculated;
+
 
         protected int _id;
         static int counter = 0;
@@ -30,7 +29,7 @@ namespace ProkatLibrary
         public Account(decimal sum, int percentage)
         {
             _sum = sum;
-            _percentage = percentage;
+          
             _id = ++counter;
         }
 
@@ -72,15 +71,11 @@ namespace ProkatLibrary
         {
             CallEvent(e, Closed);
         }
-        protected virtual void OnCalculated(AccountEventArgs e)
-        {
-            CallEvent(e, Calculated);
-        }
-
+    
         public virtual void Put(decimal sum)
         {
             _sum += sum;
-            OnAdded(new AccountEventArgs("На счет поступило " + sum, sum));
+            OnAdded(new AccountEventArgs("Оплата за заказ" + sum, sum));
         }
         public virtual decimal Withdraw(decimal sum)
         {
@@ -89,35 +84,29 @@ namespace ProkatLibrary
             {
                 _sum -= sum;
                 result = sum;
-                OnWithdrawed(new AccountEventArgs("Сумма " + sum + " снята со счета " + _id, sum));
+                OnWithdrawed(new AccountEventArgs("Сумма " + sum + " возвращена за заказ" + _id, sum));
             }
             else
             {
-                OnWithdrawed(new AccountEventArgs("Недостаточно денег на счете " + _id, 0));
+                OnWithdrawed(new AccountEventArgs("Недостаточно денег в кассе" + _id, 0));
             }
             return result;
         }
         // открытие счета
         protected internal virtual void Open()
         {
-            OnOpened(new AccountEventArgs("Открыт новый депозитный счет!Id счета: " + this._id, this._sum));
+            OnOpened(new AccountEventArgs("Открыт новый отчёт за день !Id рабочего дня: " + this._id, this._sum));
         }
         // закрытие счета
         protected internal virtual void Close()
         {
-            OnClosed(new AccountEventArgs("Счет " + _id + " закрыт.  Итоговая сумма: " + CurrentSum, CurrentSum));
+            OnClosed(new AccountEventArgs("день № " + _id + " закрыт.  Итоговая прибыль за день составляет: " + CurrentSum, CurrentSum));
         }
 
         protected internal void IncrementDays()
         {
             _days++;
         }
-        // начисление процентов
-        protected internal virtual void Calculate()
-        {
-            decimal increment = _sum * _percentage / 100;
-            _sum = _sum + increment;
-            OnCalculated(new AccountEventArgs("Начислены проценты в размере: " + increment, increment));
-        }
+       
     }
 }

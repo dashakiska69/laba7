@@ -42,7 +42,9 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="AccountStateHandler.cs" />
+    <Compile Include="DemandAccount.cs" />
     <Compile Include="IAccount.cs" />
+    <Compile Include="Prokat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

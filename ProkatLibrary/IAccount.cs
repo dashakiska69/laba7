@@ -8,10 +8,9 @@ namespace ProkatLibrary
 {
     interface IAccount
     {
-        //Вернуть ченить
+        // зачисление денег за заказ
         void Put(decimal sum);
-        //Заплатить за аренду
+        // возврат средств
         decimal Withdraw(decimal sum);
-
     }
 }

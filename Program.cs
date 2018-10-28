@@ -17,8 +17,8 @@ namespace BankApplication
             {
                 ConsoleColor color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGreen; // выводим список команд зеленым цветом
-                Console.WriteLine("1. Открыть ден \t 2. оформить возврат  \t 3. Добавить оплату");
-                Console.WriteLine("4. Закрыть день \t 5. Пропустить день \t 6. Выйти из программы");
+                Console.WriteLine("1. Открыть день \n 2. оформить возврат  \n 3. Добавить оплату");
+                Console.WriteLine("4. Закрыть день \n 5. Пропустить день \n 6. Выйти из программы");
                 Console.WriteLine("Введите номер пункта:");
                 Console.ForegroundColor = color;
                 try
@@ -63,7 +63,7 @@ namespace BankApplication
             Console.WriteLine("Укажите сумму для создания счета:");
 
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            Console.WriteLine("Выберите тип счета: 1. До востребования 2. Депозит");
+            Console.WriteLine("Введите 1");
             AccountType accountType;
 
             int type = Convert.ToInt32(Console.ReadLine());
@@ -84,10 +84,10 @@ namespace BankApplication
 
         private static void Withdraw(Prokat<Account> prokat)
         {
-            Console.WriteLine("Укажите сумму для вывода со счета:");
+            Console.WriteLine("Укажите сумму для возврата средств:");
 
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            Console.WriteLine("Введите id счета:");
+            Console.WriteLine("Введите id дня:");
             int id = Convert.ToInt32(Console.ReadLine());
 
             prokat.Withdraw(sum, id);
@@ -95,19 +95,19 @@ namespace BankApplication
 
         private static void Put(Prokat<Account> prokat)
         {
-            Console.WriteLine("Укажите сумму, чтобы положить на счет:");
+            Console.WriteLine("Укажите сумму, оплаченного заказа:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            Console.WriteLine("Введите Id счета:");
+            Console.WriteLine("Введите Id дня:");
             int id = Convert.ToInt32(Console.ReadLine());
             prokat.Put(sum, id);
         }
 
         private static void CloseAccount(Prokat<Account> prokat)
         {
-            Console.WriteLine("Введите id счета, который надо закрыть:");
+            Console.WriteLine("Введите id дня, который надо закрыть:");
             int id = Convert.ToInt32(Console.ReadLine());
 
-            bank.Close(id);
+            prokat.Close(id);
         }
         // обработчики событий класса Account
         // обработчик открытия счета
@@ -125,7 +125,7 @@ namespace BankApplication
         {
             Console.WriteLine(e.Message);
             if (e.Sum > 0)
-                Console.WriteLine("Идем тратить деньги");
+                Console.WriteLine("Все круто!");
         }
         // обработчик закрытия счета
         private static void CloseAccountHandler(object sender, AccountEventArgs e)
